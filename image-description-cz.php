@@ -27,7 +27,6 @@ $Poster = new PostController;
 defined('ABSPATH') or die('You are not allowed to access this file');
 
 class ImageDescription {
-
 	function __construct(){
 		add_action('publish_post', 'make_description', 10, 1);
 	}
@@ -39,11 +38,12 @@ class ImageDescription {
 		$sql = "CREATE TABLE '{$wpdb->base_prefix}api_data' (key varchar(255), uri varchar(255)) $charset_collate;";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
-		//echo 'The plugin was activated';
+		$success = empty($wpdb->last_error);
+		echo 'The plugin was activated';
 	}
 
 	function deactivate(){
-		//echo 'The plugin was deactivated';
+		echo 'The plugin was deactivated';
 	}
 
 	function uninstall(){
