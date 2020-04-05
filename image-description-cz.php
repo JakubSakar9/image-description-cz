@@ -55,8 +55,12 @@ class ImageDescription {
 		$rawContent = $Poster->get_var('content');
 		$imgPath = 'none';
 		for($i = 0; $i < strlen($rawContent); $i++){
-			if(substr($rawContent, $i, 10) == '<img src="'){
-				$i += 10;
+			if(substr($rawContent, $i, 4) == '<img'){
+				$i +=4
+				while(!(substr($rawContent, $i, 5) == 'src="')){
+					$i++;
+				}
+				$i += 5;
 				$j = 0;
 				while($rawContent[$i + $j] != '"'){
 					$j++;
@@ -64,6 +68,10 @@ class ImageDescription {
 				$imgPath = substr($rawContent, $i, $j);
 				$decriptionText = shell_exec('php describe.php ' . $imgPath);
 				$translatedText = shell_exec('php translate.php ' . $descriptionText);
+				do{
+					$i++;
+				}
+				while(substr($rawContent, $i, 1) != '>');
 			}	
 		}
 		
