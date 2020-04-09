@@ -33,13 +33,22 @@ class ImageDescription {
 
 	function activate(){
 		flush_rewrite_rules();
+
 		global $wpdb;
+
+		$table_name = $wpdb->prefix . "api_data";
+
 		$charset_collate = $wpdb->get_charset_collate();
-		$sql = "CREATE TABLE '{$wpdb->base_prefix}api_data' (key varchar(255), uri varchar(255)) $charset_collate;";
+
+		$sql = "CREATE TABLE wp_api_data (
+			id mediumint(9) NOT NULL AUTO_INCREMENT,
+			key varchar(255),
+			uri varchar(255),
+			PRIMARY KEY  (id)
+		) $charset_collate;";
+
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
-		$success = empty($wpdb->last_error);
-		echo 'The plugin was activated';
 	}
 
 	function deactivate(){
@@ -56,7 +65,7 @@ class ImageDescription {
 		$imgPath = 'none';
 		for($i = 0; $i < strlen($rawContent); $i++){
 			if(substr($rawContent, $i, 4) == '<img'){
-				$i +=4
+				$i +=4;
 				while(!(substr($rawContent, $i, 5) == 'src="')){
 					$i++;
 				}
@@ -72,6 +81,7 @@ class ImageDescription {
 					$i++;
 				}
 				while(substr($rawContent, $i, 1) != '>');
+				
 			}	
 		}
 		
