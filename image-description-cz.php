@@ -36,10 +36,17 @@ class ImageDescription {
 
 		global $wpdb;
 
+		//debug stuff
+		echo $wpdb->get_var(
+				"SELECT user_login FROM wp_users WHERE ID = 1"
+		);
+
+		//some additional thingies
 		$table_name = $wpdb->prefix . "api_data";
 
 		$charset_collate = $wpdb->get_charset_collate();
 
+		//make api credentials table
 		$sql = "CREATE TABLE wp_api_data (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			key varchar(255),
@@ -60,9 +67,12 @@ class ImageDescription {
 	}
 
 	function make_description($ID){
+		//get the post that has just been posted
 		$Poster->search('id', $ID);
 		$rawContent = $Poster->get_var('content');
 		$imgPath = 'none';
+
+		//search for images in the post
 		for($i = 0; $i < strlen($rawContent); $i++){
 			if(substr($rawContent, $i, 4) == '<img'){
 				$i +=4;
@@ -74,9 +84,14 @@ class ImageDescription {
 				while($rawContent[$i + $j] != '"'){
 					$j++;
 				}
+				//get their path
 				$imgPath = substr($rawContent, $i, $j);
+
+				//pass it to the API
 				$decriptionText = shell_exec('php describe.php ' . $imgPath);
 				$translatedText = shell_exec('php translate.php ' . $descriptionText);
+
+				//here be dragons
 				do{
 					$i++;
 				}
