@@ -46,14 +46,21 @@ class ImageDescription {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		//make api credentials table
-		$sql = "CREATE TABLE wp_api_data (
-			id mediumint(9) NOT NULL AUTO_INCREMENT,
+		//make api credentials table (currently doesn't work at all)
+		/*$sql = "CREATE TABLE wp_api_data (
+			ID tinyint(9) NOT NULL AUTO_INCREMENT,
 			key varchar(255),
-			uri varchar(255),
-			PRIMARY KEY  (id)
+			URI varchar(255),
+			PRIMARY KEY  (ID)
 		) $charset_collate;";
 
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);*/
+
+		//Testing API table access
+		$sql = "INSERT INTO wp_api_data(ID, key, URI)
+				VALUES (1, 'a', 'b'),
+				(2, 'c', 'd')";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 	}
