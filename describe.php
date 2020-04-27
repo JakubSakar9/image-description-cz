@@ -1,22 +1,25 @@
 <?php
-// Replace <Subscription Key> with a valid subscription key.
-$ocpApimSubscriptionKey = '';
-
-// You must use the same location in your REST call as you used to obtain
-// your subscription keys. For example, if you obtained your subscription keys
-// from westus, replace "westcentralus" in the URL below with "westus".
-//$uriBase = 'https://westcentralus.api.cognitive.microsoft.com/vision/v2.0/';
-$imageUrl = $argv[1];
 
 require_once 'HTTP_Request2-2.3.0/HTTP/Request2.php';
+global $wpdb;
+$tableName = $wpdb->prefix . "api_data";
 
-$request = new Http_Request2('');
+$apiSubscribtionKey = $wpdb->get_var(
+    "SELECT key FROM $tableName WHERE ID = 1"
+);
+
+$apiURI = $wpdb->get_var(
+    "SELECT URI FROM $tableName WHERE ID = 1"
+);
+
+$request = new Http_Request2($apiURI);
 $url = $request->getUrl();
+$imageUrl = $argv[1];
 
 $headers = array(
     // Request headers
     'Content-Type' => 'application/json',
-    'Ocp-Apim-Subscription-Key' => $ocpApimSubscriptionKey
+    'Ocp-Apim-Subscription-Key' => $apiSubscriptionKey
 );
 $request->setHeader($headers);
 

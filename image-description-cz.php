@@ -24,6 +24,9 @@ require_once('class.postcontroller.php');
 
 $Poster = new PostController;
 
+//global $wpdb;
+//$table_name = $wpdb->prefix . "api_data";
+
 defined('ABSPATH') or die('You are not allowed to access this file');
 
 class ImageDescription {
@@ -32,9 +35,8 @@ class ImageDescription {
 	}
 
 	function activate(){
-		flush_rewrite_rules();
-
 		global $wpdb;
+		$table_name = $wpdb->prefix . "api_data";
 
 		//debug stuff
 		echo $wpdb->get_var(
@@ -42,11 +44,9 @@ class ImageDescription {
 		);
 
 		//some additional thingies
-		$table_name = $wpdb->prefix . "api_data";
-
 		$charset_collate = $wpdb->get_charset_collate();
 
-		//make api credentials table (currently doesn't work at all)
+		//make api credentials table, will be added later
 		/*$sql = "CREATE TABLE wp_api_data (
 			ID tinyint(9) NOT NULL AUTO_INCREMENT,
 			key varchar(255),
@@ -57,16 +57,17 @@ class ImageDescription {
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);*/
 
-		//Testing API table access
-		$sql = "INSERT INTO wp_api_data(ID, key, URI)
-				VALUES (1, 'a', 'b'),
-				(2, 'c', 'd')";
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-		dbDelta($sql);
+		//database access example
+		$wpdb->insert($table_name, array( 'ID' => 1, 'key' => 'a', 'URI' => 'b'), null);
 	}
 
 	function deactivate(){
+		global $wpdb;
+		$table_name = $wpdb->prefix . "api_data";
+
+		//clearing the database upon deactivation
 		echo 'The plugin was deactivated';
+		$wpdb->delete($table_name, array('ID' => 1));
 	}
 
 	function uninstall(){

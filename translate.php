@@ -5,9 +5,16 @@
 // You might need to set the full path, for example:
 // extension="C:\Program Files\Php\ext\php_openssl.dll"
 
+global $wpdb;
+$tableName = $wpdb->prefix . "api_data";
 
-$subscription_key = '';
-$endpoint = '';
+$subscriptionKey = $wpdb->get_var(
+    "SELECT key FROM $tableName WHERE ID = 1"
+);
+
+$endpoint = $wpdb->get_var(
+    "SELECT URI FROM $tableName WHERE ID = 1"
+);
 
 $path = "/translate?api-version=3.0";
 
@@ -56,7 +63,7 @@ $requestBody = array (
 );
 $content = json_encode($requestBody);
 
-$result = Translate ($endpoint, $path, $subscription_key, $params, $content);
+$result = Translate ($endpoint, $path, $subscriptionKey, $params, $content);
 
 // Note: We convert result, which is JSON, to and from an object so we can pretty-print it.
 // We want to avoid escaping any Unicode characters that result contains. See:
