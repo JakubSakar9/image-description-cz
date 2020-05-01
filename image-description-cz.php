@@ -40,7 +40,7 @@ class ImageDescription {
 
 		//debug stuff
 		echo $wpdb->get_var(
-				"SELECT user_login FROM wp_users WHERE ID = 1"
+			"SELECT user_login FROM wp_users WHERE ID = 1"
 		);
 
 		//some additional thingies
@@ -72,6 +72,18 @@ class ImageDescription {
 
 	function uninstall(){
 
+	}
+
+	function register(){
+		add_action('admin_menu', array($this, 'add_admin_pages'));
+	}
+
+	public function add_admin_pages(){
+		add_menu_page('Image description CZ', 'IDCZ', 'manage_options', 'image_description_cz', array($this, 'admin_index'), 'dashicons-store', 110);	
+	}
+
+	public function admin_index(){
+		require_once plugin_dir_path(__FILE__) . 'templates/admin.php';
 	}
 
 	function make_description($ID){
@@ -106,13 +118,13 @@ class ImageDescription {
 				while(substr($rawContent, $i, 1) != '>');
 				
 			}	
-		}
-		
+		}	
 	}
 }
 
 if(class_exists('ImageDescription')){
 	$imageDescription = new ImageDescription();
+	$imageDescription->register();
 }
 
 //activation
