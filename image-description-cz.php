@@ -31,7 +31,7 @@ class ImageDescription {
 	//$table_name = $wpdb->prefix . "image_description_cz";
 
 	function __construct(){
-		add_filter('wp_handle_upload', 'make_description');
+		add_action('add_attachment', 'make_description');
 	}
 
 	function activate(){
@@ -77,10 +77,14 @@ class ImageDescription {
 
 	function make_description($post_ID){
 		global $wpdb;
-		$table_name = $wpdb->prefix . "postmeta"
+		$table_name = $wpdb->prefix . "postmeta";
 
-		$description_text = shell_exec('php describe.php' . $imgPath);
-		$translated_text = shell_exec('php translate.php' . $imgPath);
+		if(wp_attachment_is_image($post_ID)){
+			//Debug
+			$wpdb->update($table_name, array('post_excerpt' => 'test'), array('ID' => $post_ID));
+		}
+		//$description_text = shell_exec('php describe.php' . $imgPath);
+		//$translated_text = shell_exec('php translate.php' . $imgPath);
 	}
 }
 
