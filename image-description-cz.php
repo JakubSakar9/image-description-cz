@@ -24,47 +24,36 @@ require_once('class.postcontroller.php');
 
 $Poster = new PostController;
 
-//global $wpdb;
-//$table_name = $wpdb->prefix . "api_data";
-
 defined('ABSPATH') or die('You are not allowed to access this file');
 
 class ImageDescription {
+	//global $wpdb;
+	//$table_name = $wpdb->prefix . "image_description_cz";
+
 	function __construct(){
-		add_action('publish_post', 'make_description', 10, 1);
+		add_filter('wp_handle_upload', 'make_description');
 	}
 
 	function activate(){
 		global $wpdb;
-		$table_name = $wpdb->prefix . "api_data";
-
-		//debug stuff
-		echo $wpdb->get_var(
-			"SELECT user_login FROM wp_users WHERE ID = 1"
-		);
-
-		//some additional thingies
-		$charset_collate = $wpdb->get_charset_collate();
-
-		//make api credentials table, will be added later
-		/*$sql = "CREATE TABLE wp_api_data (
-			ID tinyint(9) NOT NULL AUTO_INCREMENT,
-			key varchar(255),
-			URI varchar(255),
-			PRIMARY KEY  (ID)
-		) $charset_collate;";
-
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-		dbDelta($sql);*/
-
-		//database access example
-		$wpdb->insert($table_name, array( 'ID' => 1, 'key' => 'a', 'URI' => 'b'), null);
+		$table_name = $wpdb->prefix . "image_description_cz";
+	    if($wpdb->get_var('SHOW TABLES LIKE' . $table_name) != $table_name){
+	        $sql = "CREATE TABLE $table_name (
+	            `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'nezadavej',
+	            `key` varchar(255) DEFAULT NULL,
+	            `URI` varchar(255) DEFAULT NULL,
+	            PRIMARY KEY (`ID`),
+	            UNIQUE KEY `ID` (`ID`)
+	          ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci";	 
+	          require_once(ABSPATH . '/wp-admin/includes/upgrade.php');
+	          dbDelta($sql);
+	          add_option('mse_database_version','1.0');
+	    }
 	}
 
 	function deactivate(){
 		global $wpdb;
-		$table_name = $wpdb->prefix . "api_data";
-
+		$table_name = $wpdb->prefix . "image_description_cz";
 		//clearing the database upon deactivation
 		echo 'The plugin was deactivated';
 		$wpdb->delete($table_name, array('ID' => 1));
@@ -86,39 +75,12 @@ class ImageDescription {
 		require_once plugin_dir_path(__FILE__) . 'templates/admin.php';
 	}
 
-	function make_description($ID){
-		//get the post that has just been posted
-		$Poster->search('id', $ID);
-		$rawContent = $Poster->get_var('content');
-		$imgPath = 'none';
+	function make_description($post_ID){
+		global $wpdb;
+		$table_name = $wpdb->prefix . "postmeta"
 
-		//search for images in the post
-		for($i = 0; $i < strlen($rawContent); $i++){
-			if(substr($rawContent, $i, 4) == '<img'){
-				$i +=4;
-				while(!(substr($rawContent, $i, 5) == 'src="')){
-					$i++;
-				}
-				$i += 5;
-				$j = 0;
-				while($rawContent[$i + $j] != '"'){
-					$j++;
-				}
-				//get their path
-				$imgPath = substr($rawContent, $i, $j);
-
-				//pass it to the API
-				$decriptionText = shell_exec('php describe.php ' . $imgPath);
-				$translatedText = shell_exec('php translate.php ' . $descriptionText);
-
-				//here be dragons
-				do{
-					$i++;
-				}
-				while(substr($rawContent, $i, 1) != '>');
-				
-			}	
-		}	
+		$description_text = shell_exec('php describe.php' . $imgPath);
+		$translated_text = shell_exec('php translate.php' . $imgPath);
 	}
 }
 
