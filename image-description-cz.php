@@ -72,7 +72,7 @@ class ImageDescription {
 	}
 
 	public function admin_index(){
-		require_once plugin_dir_path(__FILE__) . 'templates/admin.php';
+		require_once plugin_dir_path(__FILE__) . 'admin.php';
 	}
 
 	function make_description($post_ID){
